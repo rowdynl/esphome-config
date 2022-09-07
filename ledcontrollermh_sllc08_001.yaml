@@ -1,0 +1,292 @@
+esphome:
+  name: ledcontrollermh_sllc08_001   # Name of the Node.
+  platform: ESP8266
+  board: esp01_1m
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "LC 001 Fallback Hotspot"
+    password: !secret ledcontrollermh_sllc08_001_fallback_password
+
+# Enable logging.
+logger:
+
+# Enable Home Assistant API.
+api:
+
+# Enable over-the-air updates.
+ota:
+
+# Enable Web server.
+web_server:
+  port: 80
+
+# Sync time with Home Assistant.
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+
+light:
+  - platform: rgbww
+    name: "LED Strip 001"    # Put the name that you want to see in Home Assistant.
+    red: red_channel
+    green: green_channel
+    blue: blue_channel
+    cold_white: cold_white_channel
+    warm_white: warm_white_channel
+    cold_white_color_temperature: 6536 K
+    warm_white_color_temperature: 2000 K
+    effects:             # Add few effects : Slow and fast random colors and an "in alarm" mode.
+      - random:
+          name: "Slow Random Colors"
+          transition_length: 30s
+          update_interval: 30s
+      - random:
+          name: "Fast Random Colors"
+          transition_length: 4s
+          update_interval: 5s
+      - strobe:
+          name: Jocus (strobe)
+          colors:
+            - state: True
+              brightness: 100%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 11000ms
+            - state: True
+              brightness: 95%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 90%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 85%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 80%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 75%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 70%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 70%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 75%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 80%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 85%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 90%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 95%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 100%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 11000ms
+            - state: True
+              brightness: 95%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 90%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 85%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 80%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 75%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 70%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 70%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 75%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 80%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 85%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 90%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 50ms
+            - state: True
+              brightness: 95%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 50ms
+      - strobe:
+          name: In Alarm
+          colors:
+            - state: True
+              brightness: 100%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 150ms
+            - state: False
+              duration: 100ms
+            - state: True
+              brightness: 100%
+              red: 100%
+              blue: 0%
+              green: 0%
+              white: 0%
+              duration: 150ms
+            - state: False
+              duration: 100ms
+            - state: True
+              brightness: 100%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 150ms
+            - state: False
+              duration: 100ms
+            - state: True
+              brightness: 100%
+              red: 0%
+              blue: 100%
+              green: 0%
+              white: 0%
+              duration: 150ms
+            - state: False
+              duration: 100ms
+
+output:
+  - platform: esp8266_pwm
+    id: red_channel
+    pin: GPIO12 # was GPIO05
+  - platform: esp8266_pwm
+    id: green_channel
+    pin: GPIO14
+  - platform: esp8266_pwm
+    id: blue_channel
+    pin: GPIO13
+  - platform: esp8266_pwm
+    id: cold_white_channel
+    pin: GPIO05
+  - platform: esp8266_pwm
+    id: warm_white_channel
+    pin: GPIO15
