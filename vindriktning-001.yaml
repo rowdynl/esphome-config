@@ -17,7 +17,7 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Vindriktning Air Quality 001"
+    ssid: "Vindriktning 001"
     password: !secret vindriktning-001-fallback-password
 
 captive_portal:
