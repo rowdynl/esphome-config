@@ -11,12 +11,12 @@
 
 esphome:
   name: dsmr
-  platform: ESP8266
-  board: d1_mini
-  includes:
-    - dsmr_p1_sensor.h
-  libraries:
-    - "Dsmr"
+#  platform: ESP8266
+#  board: d1_mini  #d1_mini
+
+esp32:
+#  name: dsmr
+  board: denky32
 
 wifi:
   ssid: !secret wifi_ssid
@@ -36,6 +36,8 @@ captive_portal:
 
 # Enable Home Assistant API
 api:
+  encryption:
+    key: !secret dsmr_encryption_key
 
 ota:
 
@@ -45,31 +47,31 @@ web_server:
 
 # Enable logging
 logger:
-  level: DEBUG
-  esp8266_store_log_strings_in_flash: False
+  baud_rate: 0
+  level: VERBOSE
+#  logs:
+#    api: ERROR
+#    component: ERROR
+#    time: ERROR
+#    wifi: ERROR
+#    restart: ERROR
+#    homeassistant: ERROR
+#    json: ERROR
+#    captive_portal: ERROR
+#    web_server: ERROR
+#    mdns: ERROR
+#    ota: ERROR
 
+globals:
+  - id: has_key
+    type: bool
+    restore_value: no
+    initial_value: "false"
+    
 # Sync time with Home Assistant.
 time:
   - platform: homeassistant
     id: homeassistant_time
-
-
-
-
-# Text sensors with general information.
-#text_sensor:
-#  # Expose ESPHome version as sensor.
-#  - platform: version
-#    name: DSMR ESPHome Version
-#  # Expose WiFi information as sensors.
-#  - platform: wifi_info
-#    ip_address:
-#      name: DSMR IP
-#    ssid:
-#      name: DSMR SSID
-#    bssid:
-#      name: DSMR BSSID
-
 
 # Restart switch
 switch:
@@ -77,112 +79,133 @@ switch:
     name: "DSMR restart"
 
 uart:
-  - rx_pin: D2
-    baud_rate: 115200
-    id: uart_bus  
+  - baud_rate: 115200
+    rx_pin: GPIO21 #D2
+    rx_buffer_size: 1700
+    id: uart_bus    
+
+dsmr:
+  #id: dsmr_instance
+  max_telegram_length: 1700
+  request_pin: GPIO18
+  uart_id: uart_bus
+  #crc_check: false
 
 sensor:
-#  # Uptime sensor.
-#  - platform: uptime
-#    name: DSMR Uptime
-#
-#  # WiFi Signal sensor.
-#  - platform: wifi_signal
-#    name: DSMR WiFi Signal
-#    update_interval: 60s
-    
-  # DSMR
-  - platform: custom
-    lambda: |-
-      auto dsmr_p1_sensor = new CustomP1UartComponent(id(uart_bus));
-      App.register_component(dsmr_p1_sensor);
-      return {dsmr_p1_sensor->s_energy_delivered_tariff1, dsmr_p1_sensor->s_energy_delivered_tariff2, dsmr_p1_sensor->s_energy_returned_tariff1, dsmr_p1_sensor->s_energy_returned_tariff2, dsmr_p1_sensor->s_power_delivered, dsmr_p1_sensor->s_power_returned, dsmr_p1_sensor->s_voltage_l1, dsmr_p1_sensor->s_voltage_l2, dsmr_p1_sensor->s_voltage_l3, dsmr_p1_sensor->s_current_l1, dsmr_p1_sensor->s_current_l2, dsmr_p1_sensor->s_current_l3, dsmr_p1_sensor->s_power_delivered_l1, dsmr_p1_sensor->s_power_delivered_l2, dsmr_p1_sensor->s_power_delivered_l3, dsmr_p1_sensor->s_power_returned_l1, dsmr_p1_sensor->s_power_returned_l2, dsmr_p1_sensor->s_power_returned_l3, dsmr_p1_sensor->s_gas_device_type, dsmr_p1_sensor->s_gas_valve_position, dsmr_p1_sensor->s_gas_delivered};
+  - platform: dsmr
+    energy_delivered_tariff1:
+      name: "Energy Consumed Tariff 1"
+    energy_delivered_tariff2:
+      name: "Energy Consumed Tariff 2"
+    energy_returned_tariff1:
+      name: "Energy Produced Tariff 1"
+    energy_returned_tariff2:
+      name: "Energy Produced Tariff 2"
+    power_delivered:
+      name: "Power Consumed"
+      accuracy_decimals: 3
+    power_returned:
+      name: "Power Produced"
+      accuracy_decimals: 3
+    electricity_failures:
+      name: "Electricity Failures"
+      icon: mdi:alert
+    electricity_long_failures:
+      name: "Long Electricity Failures"
+      icon: mdi:alert
+    voltage_l1:
+      name: "Voltage Phase 1"
+    voltage_l2:
+      name: "Voltage Phase 2"
+    voltage_l3:
+      name: "Voltage Phase 3"
+    current_l1:
+      name: "Current Phase 1"
+    current_l2:
+      name: "Current Phase 2"
+    current_l3:
+      name: "Current Phase 3"
+    power_delivered_l1:
+      name: "Power Consumed Phase 1"
+      accuracy_decimals: 3
+    power_delivered_l2:
+      name: "Power Consumed Phase 2"
+      accuracy_decimals: 3
+    power_delivered_l3:
+      name: "Power Consumed Phase 3"
+      accuracy_decimals: 3
+    power_returned_l1:
+      name: "Power Produced Phase 1"
+      accuracy_decimals: 3
+    power_returned_l2:
+      name: "Power Produced Phase 2"
+      accuracy_decimals: 3
+    power_returned_l3:
+      name: "Power Produced Phase 3"
+      accuracy_decimals: 3
+    gas_delivered:
+      name: "Gas Consumed"
+  - platform: dht
+    pin: GPIO22
+    temperature:
+      name: "DSMR Temperature"
+      filters:
+      - sliding_window_moving_average:
+          window_size: 33
+          send_every: 11
+    humidity:
+      name: "DSMR Humidity"
+      filters:
+      - sliding_window_moving_average:
+          window_size: 33
+          send_every: 11
+    update_interval: 66s   
 
-    sensors:
-    - name: "Consumption Low Tarif Sensor"
-      unit_of_measurement: kWh
-      accuracy_decimals: 1
-    - name: "Consumption High Tarif Sensor"
-      unit_of_measurement: kWh
-      accuracy_decimals: 1  
-    - name: "Return Low Tarif Sensor"
-      unit_of_measurement: kWh
-      accuracy_decimals: 1
-    - name: "Return High Tarif Sensor"
-      unit_of_measurement: kWh
-      accuracy_decimals: 1  
-    - name: "Actual Consumption Sensor"
-      unit_of_measurement: W
-      accuracy_decimals: 1      
-      filters:
-        - multiply: 1000
-    - name: "Actual Delivery Sensor"
-      unit_of_measurement: W
-      accuracy_decimals: 1      
-      filters:
-        - multiply: 1000
-    - name: "Instant Voltage L1 Sensor"
-      unit_of_measurement: V
-      accuracy_decimals: 1      
-    - name: "Instant Voltage L2 Sensor"
-      unit_of_measurement: V
-      accuracy_decimals: 1      
-    - name: "Instant Voltage L3 Sensor"
-      unit_of_measurement: V
-      accuracy_decimals: 1      
-    - name: "Instant Current L1 Sensor"
-      unit_of_measurement: A
-      accuracy_decimals: 1      
-    - name: "Instant Current L2 Sensor"
-      unit_of_measurement: A
-      accuracy_decimals: 1      
-    - name: "Instant Current L3 Sensor"
-      unit_of_measurement: A
-      accuracy_decimals: 1      
-    - name: "Power Delivered L1 Sensor"
-      unit_of_measurement: W
-      accuracy_decimals: 1      
-      filters:
-        - multiply: 1000
-    - name: "Power Delivered L2 Sensor"
-      unit_of_measurement: W
-      accuracy_decimals: 1      
-      filters:
-        - multiply: 1000
-    - name: "Power Delivered L3 Sensor"
-      unit_of_measurement: W
-      accuracy_decimals: 1      
-      filters:
-        - multiply: 1000
-    - name: "Power Returned L1 Sensor"
-      unit_of_measurement: W
-      accuracy_decimals: 1      
-      filters:
-        - multiply: 1000
-    - name: "Power Returned L2 Sensor"
-      unit_of_measurement: W
-      accuracy_decimals: 1      
-      filters:
-        - multiply: 1000
-    - name: "Power Returned L3 Sensor"
-      unit_of_measurement: W
-      accuracy_decimals: 1      
-      filters:
-        - multiply: 1000
-    - name: "Gas device type Sensor"
-    - name: "Gas valve position Sensor"  
-    - name: "Gas Meter M3 Sensor"
-      unit_of_measurement: m3
-      accuracy_decimals: 1
-      id: "gas_cubic_meters"
+#  - platform: pulse_counter
+#    pin: D3
+#    update_interval : 6s
+#    name: "water pulse"
+#    id: water_pulse    
 
-      
-  - platform: total_daily_energy
-    name: "Total Daily Gas"
-    power_id: "gas_cubic_meters"
-    id: "total_daily_gas_cubic_meters"
-    unit_of_measurement: m3
-    filters:
-        # Multiplication factor from W to kW is 0.001
-        - multiply: 0.001
-    device_class: energy
+  - platform: pulse_meter
+    pin: GPIO17
+    name: "Water Flow"
+    unit_of_measurement: "liter/min"
+    icon: "mdi:water"
+    id: water_flow_rate   
+#    total:
+#      name: "Water Total"
+#      unit_of_measurement: "liter"      
+
+  - platform: pulse_meter
+    pin: GPIO17
+    name: "Water Pulse Meter"
+    id: water_pulse_meter
+    unit_of_measurement: "liter/min"
+    icon: "mdi:water"
+    total:
+      name: "Water Meter Total"
+      unit_of_measurement: "m³"
+      id: water_meter_total
+      icon: "mdi:water"
+      accuracy_decimals: 3
+      device_class: water
+      state_class: total_increasing
+      filters:
+        - multiply: 0.001       
+
+#  - platform: template
+#    name: "Water Usage Liter"
+#    id: water_flow_rate
+#    accuracy_decimals: 1
+#    unit_of_measurement: "l/min"
+#    icon: "mdi:water"
+#    lambda: return (id(water_pulse).state * 10);
+#    update_interval: 6s   
+
+text_sensor:
+  - platform: dsmr
+    identification:
+      name: "DSMR Identification"
+    p1_version:
+      name: "DSMR Version"
