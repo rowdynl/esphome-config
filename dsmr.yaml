@@ -11,11 +11,8 @@
 
 esphome:
   name: dsmr
-#  platform: ESP8266
-#  board: d1_mini  #d1_mini
 
 esp32:
-#  name: dsmr
   board: denky32
 
 wifi:
@@ -48,19 +45,7 @@ web_server:
 # Enable logging
 logger:
   baud_rate: 0
-  level: VERBOSE
-#  logs:
-#    api: ERROR
-#    component: ERROR
-#    time: ERROR
-#    wifi: ERROR
-#    restart: ERROR
-#    homeassistant: ERROR
-#    json: ERROR
-#    captive_portal: ERROR
-#    web_server: ERROR
-#    mdns: ERROR
-#    ota: ERROR
+  level: ERROR
 
 globals:
   - id: has_key
@@ -160,23 +145,12 @@ sensor:
           window_size: 33
           send_every: 11
     update_interval: 66s   
-
-#  - platform: pulse_counter
-#    pin: D3
-#    update_interval : 6s
-#    name: "water pulse"
-#    id: water_pulse    
-
   - platform: pulse_meter
     pin: GPIO17
     name: "Water Flow"
     unit_of_measurement: "liter/min"
     icon: "mdi:water"
     id: water_flow_rate   
-#    total:
-#      name: "Water Total"
-#      unit_of_measurement: "liter"      
-
   - platform: pulse_meter
     pin: GPIO17
     name: "Water Pulse Meter"
@@ -193,15 +167,6 @@ sensor:
       state_class: total_increasing
       filters:
         - multiply: 0.001       
-
-#  - platform: template
-#    name: "Water Usage Liter"
-#    id: water_flow_rate
-#    accuracy_decimals: 1
-#    unit_of_measurement: "l/min"
-#    icon: "mdi:water"
-#    lambda: return (id(water_pulse).state * 10);
-#    update_interval: 6s   
 
 text_sensor:
   - platform: dsmr
