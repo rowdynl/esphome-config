@@ -1,6 +1,7 @@
 esphome:
   name: vindriktning-001
-  platform: ESP8266
+
+esp8266:
   board: d1_mini
 
 # Enable logging
@@ -23,6 +24,7 @@ wifi:
 captive_portal:
 
 ota:
+  - platform: esphome
 
 # Enable Web server.
 web_server:
@@ -54,7 +56,7 @@ sensor:
         - sliding_window_moving_average:
             window_size: 10
             send_every: 10
-  - platform: bmp280
+  - platform: bmp280_i2c
     temperature:
       id: vindriktning_temperature_001
       name: "Temperature"

@@ -14,6 +14,8 @@ esphome:
 
 esp32:
   board: denky32
+  framework:
+    type: arduino
 
 wifi:
   ssid: !secret wifi_ssid
@@ -37,6 +39,7 @@ api:
     key: !secret dsmr_encryption_key
 
 ota:
+  - platform: esphome
 
 # Enable Web server.
 web_server:
@@ -148,12 +151,6 @@ sensor:
   - platform: pulse_meter
     pin: GPIO17
     name: "Water Flow"
-    unit_of_measurement: "liter/min"
-    icon: "mdi:water"
-    id: water_flow_rate   
-  - platform: pulse_meter
-    pin: GPIO17
-    name: "Water Pulse Meter"
     id: water_pulse_meter
     unit_of_measurement: "liter/min"
     icon: "mdi:water"
